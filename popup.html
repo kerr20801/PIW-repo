@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{width:320px;min-height:380px;background:#0f1117;color:#e0e0e0;
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang TC",sans-serif;font-size:13px}
+.header{background:linear-gradient(135deg,#0f1117,#1a1d2e);
+  padding:14px 16px;border-bottom:1px solid #1f2937;
+  display:flex;align-items:center;gap:10px}
+.logo{width:36px;height:36px;border-radius:8px;background:#141826;
+  display:flex;align-items:center;justify-content:center;flex-shrink:0;
+  font-size:20px;font-weight:900;color:#f59e0b;font-family:monospace;
+  border:1.5px solid #2a2d3e;position:relative;overflow:hidden}
+.logo::after{content:'';position:absolute;width:9px;height:9px;
+  background:#ef4444;border-radius:50%;bottom:4px;right:4px}
+.header-text{flex:1}
+.header-text h1{font-size:14px;font-weight:700;color:#f9fafb}
+.header-text p{font-size:10px;color:#6b7280;margin-top:1px}
+.lang-btn{background:#1a1d2e;border:1px solid #2a2d3e;color:#6b7280;
+  padding:3px 10px;border-radius:12px;cursor:pointer;font-size:11px;
+  font-weight:700;font-family:inherit;flex-shrink:0;transition:all .15s}
+.lang-btn:hover{border-color:#f59e0b;color:#f59e0b}
+.status-bar{display:flex;align-items:center;gap:6px;padding:7px 16px;
+  background:#0a0c10;border-bottom:1px solid #1f2937;font-size:11px;color:#6b7280}
+.dot{width:7px;height:7px;border-radius:50%;background:#22c55e;flex-shrink:0;
+  box-shadow:0 0 6px #22c55e;animation:pulse 2s infinite}
+.dot.off{background:#4b5563;box-shadow:none;animation:none}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.5}}
+.stats-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;padding:12px 16px}
+.stat-card{background:#1a1d2e;border:1px solid #1f2937;border-radius:8px;padding:10px 12px}
+.stat-num{font-size:22px;font-weight:700;color:#ef4444;font-family:monospace}
+.stat-lbl{font-size:10px;color:#6b7280;margin-top:2px;text-transform:uppercase;letter-spacing:.04em}
+.section{padding:0 16px 12px}
+.sec-title{font-size:10px;color:#4b5563;text-transform:uppercase;letter-spacing:.06em;padding:10px 0 6px}
+.recent-list{display:flex;flex-direction:column;gap:4px;max-height:110px;overflow-y:auto}
+.rec-item{display:flex;align-items:center;gap:6px;
+  background:#1a1d2e;border:1px solid #1f2937;border-radius:6px;padding:6px 10px;font-size:11px}
+.rec-host{color:#93c5fd;font-family:monospace;flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.sev-high{background:#3f0a0a;color:#fca5a5;padding:1px 6px;border-radius:8px;font-size:10px;font-weight:700;flex-shrink:0}
+.sev-medium{background:#3b1f00;color:#fcd34d;padding:1px 6px;border-radius:8px;font-size:10px;font-weight:700;flex-shrink:0}
+.rec-time{font-size:10px;color:#4b5563;flex-shrink:0}
+.empty{font-size:11px;color:#374151;padding:6px 0}
+
+/* Sensitivity chips */
+.sens-row{display:flex;gap:6px;padding:0 16px 12px}
+.chip{padding:4px 14px;border-radius:12px;font-size:11px;font-weight:700;cursor:pointer;
+  border:1.5px solid #2a2d3e;background:#1a1d2e;color:#4b5563;
+  font-family:inherit;transition:all .12s}
+.chip:hover{color:#e0e0e0}
+.chip.active-high{border-color:#ef4444;color:#fca5a5;background:#3f0a0a}
+.chip.active-medium{border-color:#f59e0b;color:#fcd34d;background:#3b1f00}
+.chip.active-low{border-color:#22c55e;color:#86efac;background:#0a2f0f}
+
+.toggle-row{display:flex;align-items:center;justify-content:space-between;
+  background:#1a1d2e;border:1px solid #1f2937;border-radius:8px;
+  padding:10px 12px;margin:0 16px 8px}
+.toggle-row span{font-size:12px}
+.toggle-row small{font-size:10px;color:#6b7280;display:block}
+.toggle{position:relative;width:36px;height:20px;flex-shrink:0}
+.toggle input{opacity:0;width:0;height:0}
+.slider{position:absolute;inset:0;background:#1f2937;border-radius:20px;cursor:pointer;transition:background .2s}
+.slider:before{content:'';position:absolute;width:14px;height:14px;
+  left:3px;top:3px;background:#6b7280;border-radius:50%;transition:all .2s}
+input:checked+.slider{background:#f59e0b}
+input:checked+.slider:before{transform:translateX(16px);background:#fff}
+.btn{width:calc(100% - 32px);margin:0 16px 5px;padding:8px;border:none;border-radius:6px;
+  font-size:12px;font-weight:700;cursor:pointer;font-family:inherit;transition:opacity .15s}
+.btn.danger{background:#3f0a0a;color:#fca5a5;border:1px solid #7f1d1d}
+.btn:hover{opacity:.8}
+.footer{padding:6px 16px 12px;font-size:10px;color:#374151;text-align:center}
+.footer a{color:#6b7280;text-decoration:none}.footer a:hover{color:#9ca3af}
+</style>
+</head>
+<body>
+<div class="header">
+  <div class="logo">!</div>
+  <div class="header-text">
+    <h1>PIW</h1>
+    <p id="h-sub">本機偵測 · 資料不外傳 · by Kerr</p>
+  </div>
+  <button class="lang-btn" id="lang-btn">EN</button>
+</div>
+
+<div class="status-bar">
+  <div class="dot" id="status-dot"></div>
+  <span id="status-text">保護中</span>
+</div>
+
+<div class="stats-grid">
+  <div class="stat-card">
+    <div class="stat-num" id="stat-total">0</div>
+    <div class="stat-lbl" id="lbl-total">累計攔截</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-num" id="stat-sites" style="color:#f59e0b">0</div>
+    <div class="stat-lbl" id="lbl-sites">涉及服務</div>
+  </div>
+</div>
+
+<div class="section">
+  <div class="sec-title" id="lbl-recent">最近記錄</div>
+  <div class="recent-list" id="recent-list">
+    <div class="empty" id="empty-msg">尚無記錄</div>
+  </div>
+</div>
+
+<div class="section" style="padding-bottom:0">
+  <div class="sec-title" id="lbl-sens">靈敏度</div>
+</div>
+<div class="sens-row">
+  <button class="chip" id="chip-high"   data-val="high"   >HIGH</button>
+  <button class="chip" id="chip-medium" data-val="medium" >MEDIUM</button>
+  <button class="chip" id="chip-low"    data-val="low"    >LOW</button>
+</div>
+
+<div class="toggle-row">
+  <div>
+    <span id="lbl-enable">🔔 啟用偵測</span>
+    <small id="lbl-enable-sub">關閉後停止所有監控</small>
+  </div>
+  <label class="toggle">
+    <input type="checkbox" id="enable-chk" checked>
+    <span class="slider"></span>
+  </label>
+</div>
+
+<button class="btn danger" id="btn-clear">🗑 清除記錄</button>
+
+<div class="footer">
+  Built by <a href="https://github.com/kerr20801" target="_blank">Kerr</a>
+  · <a href="https://github.com/kerr20801" target="_blank">github.com/kerr20801</a>
+</div>
+
+<script>
+const I = {
+  zh: {
+    sub: '本機偵測 · 資料不外傳 · by Kerr', lang: 'EN',
+    protected: '保護中', disabled: '已停用',
+    total: '累計攔截', sites: '涉及服務', recent: '最近記錄',
+    empty: '尚無記錄', sens: '靈敏度',
+    enable: '🔔 啟用偵測', enable_sub: '關閉後停止所有監控',
+    clear: '🗑 清除記錄',
+  },
+  en: {
+    sub: 'Local detection · No data sent · by Kerr', lang: '中文',
+    protected: 'Protected', disabled: 'Disabled',
+    total: 'Intercepted', sites: 'AI Services', recent: 'Recent Alerts',
+    empty: 'No alerts yet', sens: 'Sensitivity',
+    enable: '🔔 Enable Detection', enable_sub: 'Stops monitoring when off',
+    clear: '🗑 Clear History',
+  },
+};
+
+let _lang = localStorage.getItem('piw-lang') || (navigator.language.startsWith('zh') ? 'zh' : 'en');
+let _sensitivity = 'medium';
+let _enabled = true;
+
+function reltime(ts) {
+  const s = Math.floor((Date.now() - ts) / 1000);
+  if (s < 60) return `${s}s`;
+  if (s < 3600) return `${Math.floor(s/60)}m`;
+  return `${Math.floor(s/3600)}h`;
+}
+
+function applyLang() {
+  const t = I[_lang];
+  document.getElementById('h-sub').textContent = t.sub;
+  document.getElementById('lang-btn').textContent = t.lang;
+  document.getElementById('status-text').textContent = _enabled ? t.protected : t.disabled;
+  document.getElementById('lbl-total').textContent = t.total;
+  document.getElementById('lbl-sites').textContent = t.sites;
+  document.getElementById('lbl-recent').textContent = t.recent;
+  document.getElementById('lbl-sens').textContent = t.sens;
+  document.getElementById('lbl-enable').textContent = t.enable;
+  document.getElementById('lbl-enable-sub').textContent = t.enable_sub;
+  document.getElementById('btn-clear').textContent = t.clear;
+  const empty = document.getElementById('empty-msg');
+  if (empty) empty.textContent = t.empty;
+}
+
+document.getElementById('lang-btn').onclick = () => {
+  _lang = _lang === 'zh' ? 'en' : 'zh';
+  localStorage.setItem('piw-lang', _lang);
+  applyLang();
+};
+
+function renderStats(stats) {
+  document.getElementById('stat-total').textContent = stats.total;
+  document.getElementById('stat-sites').textContent = Object.keys(stats.sites).length;
+
+  const list = document.getElementById('recent-list');
+  if (!stats.recent.length) {
+    list.innerHTML = `<div class="empty" id="empty-msg">${I[_lang].empty}</div>`;
+    return;
+  }
+  list.innerHTML = stats.recent.slice(0, 12).map(r => {
+    const sevCls = r.severity === 'high' ? 'sev-high' : 'sev-medium';
+    const label = (r.labels || [])[0] || r.severity;
+    return `<div class="rec-item">
+      <span class="rec-host">${r.host}</span>
+      <span class="${sevCls}">${r.severity.toUpperCase()}</span>
+      <span class="rec-time">${reltime(r.ts)}</span>
+    </div>`;
+  }).join('');
+}
+
+function setSensitivity(val) {
+  _sensitivity = val;
+  document.querySelectorAll('.chip').forEach(c => {
+    c.className = 'chip';
+    if (c.dataset.val === val) c.classList.add(`active-${val}`);
+  });
+}
+
+document.querySelectorAll('.chip').forEach(c => {
+  c.onclick = () => {
+    setSensitivity(c.dataset.val);
+    saveSettings();
+  };
+});
+
+document.getElementById('enable-chk').onchange = (e) => {
+  _enabled = e.target.checked;
+  document.getElementById('status-dot').className = 'dot' + (_enabled ? '' : ' off');
+  document.getElementById('status-text').textContent = I[_lang][_enabled ? 'protected' : 'disabled'];
+  saveSettings();
+};
+
+document.getElementById('btn-clear').onclick = () => {
+  chrome.runtime.sendMessage({ type: 'clear_stats' }, () => {
+    void chrome.runtime.lastError;
+    renderStats({ total: 0, sites: {}, recent: [] });
+    chrome.action.setBadgeText({ text: '' });
+  });
+};
+
+function saveSettings() {
+  chrome.runtime.sendMessage(
+    { type: 'set_settings', enabled: _enabled, sensitivity: _sensitivity },
+    () => void chrome.runtime.lastError
+  );
+}
+
+async function init() {
+  const [settings, stats] = await Promise.all([
+    chrome.runtime.sendMessage({ type: 'get_settings' }).catch(() => ({ enabled: true, sensitivity: 'medium' })),
+    chrome.runtime.sendMessage({ type: 'get_stats' }).catch(() => ({ total: 0, sites: {}, recent: [] })),
+  ]);
+
+  _enabled     = settings.enabled !== false;
+  _sensitivity = settings.sensitivity || 'medium';
+
+  document.getElementById('enable-chk').checked = _enabled;
+  document.getElementById('status-dot').className = 'dot' + (_enabled ? '' : ' off');
+
+  setSensitivity(_sensitivity);
+  applyLang();
+  renderStats(stats);
+}
+
+init().catch(() => { applyLang(); });
+</script>
+</body>
+</html>
